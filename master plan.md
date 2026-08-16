@@ -38,11 +38,11 @@
 [DONE] - 1.5.1. `types/index.ts`
 [DONE] - 1.5.2. `schemas/index.ts`
 
-[]- **1.6. Write Server Actions**
+[DONE]- **1.6. Write Server Actions**
 [DONE] - 1.6.1. `actions/createTransaction.ts`
-[] - 1.6.2. `actions/getTransactions.ts`
-[] - 1.6.3. `actions/updateBudget.ts`
-[] - 1.6.4. `actions/deletePot.ts`
+[DONE] - 1.6.2. `actions/getTransactions.ts`
+[DONE] - 1.6.3. `actions/updateBudget.ts`
+[DONE] - 1.6.4. `actions/deletePot.ts`
 
 []- **1.7. Test Server Actions**
 
