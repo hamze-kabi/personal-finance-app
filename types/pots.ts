@@ -1,8 +1,9 @@
-export interface Budget {
+export interface Pot {
   id: number;
   user_id: string;
-  category: string;
-  maximum: number;
+  name: string;
+  target: number;
+  total: number;
   theme: string | null;
   created_at: string;
 }
