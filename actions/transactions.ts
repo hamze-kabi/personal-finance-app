@@ -62,3 +62,23 @@ export async function createTransaction(formData: FormData) {
   revalidatePath("/transactions");
   return { success: "Transaction created successfully", data };
 }
+
+// In actions/transactions.ts
+export async function getTransactions() {
+  const supabase = await createClient();
+
+  // TEMPORARY: Use the same hardcoded user ID
+  const TEST_USER_ID = "48da69c7-f18c-4f18-865d-8b1711fb82db";
+
+  const { data, error } = await supabase
+    .from("transactions")
+    .select("*")
+    .eq("user_id", TEST_USER_ID)
+    .order("date", { ascending: false });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { data };
+}
