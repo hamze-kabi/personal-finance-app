@@ -50,17 +50,17 @@
 
 [] **Phase 2: Foundation & Layout**
 
-[]- **2.1. Build the main layout**
-[] - 2.1.1. Create the sidebar (bottom bar on mobile/tablet)
-[] - 2.1.2. Implement sidebar open/close functionality
-[] - 2.1.3. Make the layout responsive (Mobile First)
+[DONE]- **2.1. Build the main layout**
+[DONE] - 2.1.1. Create the sidebar (bottom bar on mobile/tablet)
+[DONE] - 2.1.2. Implement sidebar open/close functionality
+[DONE] - 2.1.3. Make the layout responsive (Mobile First)
 
-[]- **2.2. Create page skeletons**
-[] - 2.2.1. Overview page
-[] - 2.2.2. Transactions page
-[] - 2.2.3. Budgets page
-[] - 2.2.4. Pots page
-[] - 2.2.5. Recurring Bills page
+[DONE]- **2.2. Create page skeletons**
+[DONE] - 2.2.1. Overview page
+[DONE] - 2.2.2. Transactions page
+[DONE] - 2.2.3. Budgets page
+[DONE] - 2.2.4. Pots page
+[DONE] - 2.2.5. Recurring Bills page
 
 []- **2.3. Set up Zustand store**
 
