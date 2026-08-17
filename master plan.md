@@ -44,7 +44,7 @@
 [DONE] - 1.6.3. `actions/updateBudget.ts`
 [DONE] - 1.6.4. `actions/deletePot.ts`
 
-[]- **1.7. Test Server Actions**
+[DONE]- **1.7. Test Server Actions**
 
 ---
 
