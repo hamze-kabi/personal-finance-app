@@ -62,7 +62,7 @@
 [DONE] - 2.2.4. Pots page
 [DONE] - 2.2.5. Recurring Bills page
 
-[]- **2.3. Set up Zustand store**
+[DONE]- **2.3. Set up Zustand store**
 
 ---
 
