@@ -10,6 +10,6 @@ export const createTransactionSlice: StateCreator<TransactionUISlice> = (
   setSelectedCategory: (category) => set({ selectedCategory: category }),
   sortOption: "newest",
   setSortOption: (option) => set({ sortOption: option }),
-  isLoading: false,
-  setIsLoading: (loading) => set({ isLoading: loading }),
+  transactionsLoading: false,
+  setTransactionsLoading: (loading) => set({ transactionsLoading: loading }),
 });

@@ -6,10 +6,15 @@ import { createBudgetSlice } from "./budgetSlice";
 import { createPotSlice } from "./potSlice";
 import { createRecurringBillSlice } from "./recurringBillSlice";
 
-export const useStore = create<StoreState>()((...args) => ({
-  ...createUISlice(...args),
-  ...createTransactionSlice(...args),
-  ...createBudgetSlice(...args),
-  ...createPotSlice(...args),
-  ...createRecurringBillSlice(...args),
-}));
+export const useStore = create<StoreState>()((...args) => {
+  const store = {
+    ...createUISlice(...args),
+    ...createTransactionSlice(...args),
+    ...createBudgetSlice(...args),
+    ...createPotSlice(...args),
+    ...createRecurringBillSlice(...args),
+  };
+
+  console.log("🔵 Zustand Store Created:", Object.keys(store));
+  return store;
+});

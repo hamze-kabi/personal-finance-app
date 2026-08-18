@@ -4,8 +4,9 @@ import { RecurringBillUISlice } from "./types";
 export const createRecurringBillSlice: StateCreator<RecurringBillUISlice> = (
   set,
 ) => ({
-  isLoading: false,
-  setIsLoading: (loading) => set({ isLoading: loading }),
+  recurringBillsLoading: false,
+  setRecurringBillsLoading: (loading) =>
+    set({ recurringBillsLoading: loading }),
   searchQuery: "",
   setSearchQuery: (query) => set({ searchQuery: query }),
 });

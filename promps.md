@@ -1,6 +1,17 @@
-here are some changes that need to be done:
+regarding zustand test page:
 
-1. in tablet and mobile version, delete the top header, which contains finance app title and logo next to it, and hamburger menu
-2. in desktop version, delete the title "finance app" and the logo next to it, instead use the following logo: public\icons\logo-large.svg
-3. in desktop version the sidebar should be able to minimize and maximize, do it like the following guide:
-   at lower
+1.  still reset all does not change sidebar open to yes
+2.  when toggle loading button is clicked, loading state does not change and the following error is displayed in the console:
+    [browser] Uncaught TypeError: setTransactionsLoading is not a function
+    at onClick (app/test/page.tsx:182:11)
+    at button (<anonymous>)
+    at TestZustandPage (app/test/page.tsx:177:7)
+    180 | setSelectedCategory("");
+    181 | setSortOption("newest");
+    > 182 | setTransactionsLoading(false);
+          |           ^
+    183 | setBudgetsLoading(false);
+    184 | setPotsLoading(false);
+    185 | setBillSearchQuery("");
+
+all the toggle loading buttons display the same error, but with their corresponding name

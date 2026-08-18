@@ -17,32 +17,32 @@ export interface TransactionUISlice {
   setSelectedCategory: (category: string) => void;
   sortOption: string;
   setSortOption: (option: string) => void;
-  isLoading: boolean;
-  setIsLoading: (loading: boolean) => void;
+  transactionsLoading: boolean;
+  setTransactionsLoading: (loading: boolean) => void;
 }
 
 // ============================================
 // BUDGET UI SLICE TYPES
 // ============================================
 export interface BudgetUISlice {
-  isLoading: boolean;
-  setIsLoading: (loading: boolean) => void;
+  budgetsLoading: boolean;
+  setBudgetsLoading: (loading: boolean) => void;
 }
 
 // ============================================
 // POT UI SLICE TYPES
 // ============================================
 export interface PotUISlice {
-  isLoading: boolean;
-  setIsLoading: (loading: boolean) => void;
+  potsLoading: boolean;
+  setPotsLoading: (loading: boolean) => void;
 }
 
 // ============================================
 // RECURRING BILL UI SLICE TYPES
 // ============================================
 export interface RecurringBillUISlice {
-  isLoading: boolean;
-  setIsLoading: (loading: boolean) => void;
+  recurringBillsLoading: boolean;
+  setRecurringBillsLoading: (loading: boolean) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
 }
