@@ -16,7 +16,7 @@ export const navItems = [
   },
   {
     name: "Pot",
-    href: "/pot",
+    href: "/pots",
     icon: "/icons/icon-nav-pots.svg",
   },
   {

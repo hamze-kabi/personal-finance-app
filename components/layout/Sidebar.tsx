@@ -8,10 +8,9 @@ import { useState } from "react";
 
 interface SidebarProps {
   isOpen: boolean;
-  onToggle?: () => void;
 }
 
-export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
+export default function Sidebar({ isOpen }: SidebarProps) {
   const pathname = usePathname();
   const [isMinimized, setIsMinimized] = useState(false);
 
