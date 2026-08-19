@@ -72,8 +72,8 @@
 
 []- **3.2. Implement core features**
 [DONE] - 3.2.1. Overview (Balance, income, expense, summaries)
-[] - 3.2.2. Transactions (Paginated list, search, sort, filter)
-[] - 3.2.3. Budgets (CRUD)
+[DONE] - 3.2.2. Transactions (Paginated list, search, sort, filter)
+[DONE] - 3.2.3. Budgets (CRUD)
 [] - 3.2.4. Pots (Add/Withdraw money)
 [] - 3.2.5. Recurring Bills
 
