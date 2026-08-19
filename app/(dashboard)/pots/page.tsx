@@ -6,6 +6,7 @@ import { getPots } from "@/actions/transactions";
 import { createPot, updatePot, deletePot } from "@/actions/pots";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import ErrorMessage from "@/components/ui/ErrorMessage";
+import FormError from "@/components/ui/FormError";
 
 export default function PotsPage() {
   const { potsLoading, setPotsLoading } = useStore();
@@ -23,7 +24,13 @@ export default function PotsPage() {
   });
   const [transactionAmount, setTransactionAmount] = useState("");
   const [formError, setFormError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({
+    name: "",
+    target: "",
+  });
+  const [transactionError, setTransactionError] = useState("");
 
+  // Fetch pots
   const fetchPots = async () => {
     setPotsLoading(true);
     setError(null);
@@ -40,6 +47,7 @@ export default function PotsPage() {
     fetchPots();
   }, []);
 
+  // Open modal for creating/editing pot
   const openModal = (pot = null) => {
     if (pot) {
       setEditingPot(pot);
@@ -57,22 +65,27 @@ export default function PotsPage() {
       });
     }
     setFormError("");
+    setFieldErrors({ name: "", target: "" });
     setIsModalOpen(true);
   };
 
+  // Open transaction modal for add/withdraw
   const openTransactionModal = (pot, type) => {
     setSelectedPot(pot);
     setTransactionType(type);
     setTransactionAmount("");
     setFormError("");
+    setTransactionError("");
     setIsTransactionModalOpen(true);
   };
 
+  // Close modals
   const closeModal = () => {
     setIsModalOpen(false);
     setEditingPot(null);
     setFormData({ name: "", target: "", theme: "#277C78" });
     setFormError("");
+    setFieldErrors({ name: "", target: "" });
   };
 
   const closeTransactionModal = () => {
@@ -80,11 +93,91 @@ export default function PotsPage() {
     setSelectedPot(null);
     setTransactionAmount("");
     setFormError("");
+    setTransactionError("");
   };
 
+  // Validate a single field for pot form
+  const validateField = (name: string, value: string) => {
+    switch (name) {
+      case "name":
+        if (!value.trim()) {
+          return "Pot name is required";
+        }
+        if (value.trim().length < 2) {
+          return "Name must be at least 2 characters";
+        }
+        return "";
+      case "target":
+        if (!value) {
+          return "Target amount is required";
+        }
+        const num = parseFloat(value);
+        if (isNaN(num) || num <= 0) {
+          return "Target must be a positive number";
+        }
+        return "";
+      default:
+        return "";
+    }
+  };
+
+  // Validate transaction amount
+  const validateTransaction = (value: string) => {
+    if (!value) {
+      return "Amount is required";
+    }
+    const num = parseFloat(value);
+    if (isNaN(num) || num <= 0) {
+      return "Amount must be a positive number";
+    }
+    if (
+      transactionType === "withdraw" &&
+      selectedPot &&
+      num > selectedPot.total
+    ) {
+      return "Insufficient balance in this pot";
+    }
+    return "";
+  };
+
+  // Handle pot form field change
+  const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+
+    const errorMsg = validateField(name, value);
+    setFieldErrors({ ...fieldErrors, [name]: errorMsg });
+  };
+
+  // Handle transaction amount change
+  const handleTransactionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setTransactionAmount(value);
+    const errorMsg = validateTransaction(value);
+    setTransactionError(errorMsg);
+  };
+
+  // Validate pot form before submitting
+  const validatePotForm = () => {
+    const nameError = validateField("name", formData.name);
+    const targetError = validateField("target", formData.target);
+
+    setFieldErrors({
+      name: nameError,
+      target: targetError,
+    });
+
+    return !nameError && !targetError;
+  };
+
+  // Handle pot form submission (create/update)
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormError("");
+
+    if (!validatePotForm()) {
+      return;
+    }
 
     const data = {
       name: formData.name,
@@ -107,21 +200,18 @@ export default function PotsPage() {
     }
   };
 
+  // Handle add/withdraw transaction
   const handleTransaction = async (e) => {
     e.preventDefault();
     setFormError("");
 
+    const errorMsg = validateTransaction(transactionAmount);
+    if (errorMsg) {
+      setTransactionError(errorMsg);
+      return;
+    }
+
     const amount = parseFloat(transactionAmount);
-    if (isNaN(amount) || amount <= 0) {
-      setFormError("Please enter a valid amount.");
-      return;
-    }
-
-    if (transactionType === "withdraw" && amount > selectedPot.total) {
-      setFormError("Insufficient balance in this pot.");
-      return;
-    }
-
     const newTotal =
       transactionType === "add"
         ? selectedPot.total + amount
@@ -137,6 +227,7 @@ export default function PotsPage() {
     }
   };
 
+  // Handle delete
   const handleDelete = async (id) => {
     if (confirm("Are you sure you want to delete this pot?")) {
       const result = await deletePot(id);
@@ -284,39 +375,47 @@ export default function PotsPage() {
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} noValidate className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Pot Name
                 </label>
                 <input
                   type="text"
+                  name="name"
                   value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  onChange={handleFieldChange}
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
+                    fieldErrors.name
+                      ? "border-red-500 focus:border-red-500"
+                      : "border-gray-200 focus:ring-2 focus:ring-blue-500"
+                  }`}
                   placeholder="e.g., Vacation Fund"
-                  required
                 />
+                <FormError message={fieldErrors.name} />
               </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Target Amount ($)
                 </label>
                 <input
                   type="number"
+                  name="target"
                   step="0.01"
                   min="0"
                   value={formData.target}
-                  onChange={(e) =>
-                    setFormData({ ...formData, target: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  onChange={handleFieldChange}
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
+                    fieldErrors.target
+                      ? "border-red-500 focus:border-red-500"
+                      : "border-gray-200 focus:ring-2 focus:ring-blue-500"
+                  }`}
                   placeholder="e.g., 1000.00"
-                  required
                 />
+                <FormError message={fieldErrors.target} />
               </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Theme Color
@@ -335,6 +434,7 @@ export default function PotsPage() {
                   </span>
                 </div>
               </div>
+
               <div className="flex gap-3 pt-2">
                 <button
                   type="submit"
@@ -375,22 +475,28 @@ export default function PotsPage() {
               </div>
             )}
 
-            <form onSubmit={handleTransaction} className="space-y-4">
+            <form onSubmit={handleTransaction} noValidate className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Amount ($)
                 </label>
                 <input
                   type="number"
+                  name="amount"
                   step="0.01"
                   min="0.01"
                   value={transactionAmount}
-                  onChange={(e) => setTransactionAmount(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  onChange={handleTransactionChange}
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
+                    transactionError
+                      ? "border-red-500 focus:border-red-500"
+                      : "border-gray-200 focus:ring-2 focus:ring-blue-500"
+                  }`}
                   placeholder="e.g., 50.00"
-                  required
                 />
+                <FormError message={transactionError} />
               </div>
+
               <div className="flex gap-3 pt-2">
                 <button
                   type="submit"
