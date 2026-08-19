@@ -1,24 +1,23 @@
 import Image from "next/image";
 import { getTransactions, getBudgets, getPots } from "@/actions/transactions";
+import ErrorMessage from "@/components/ui/ErrorMessage";
 
 export default async function OverviewPage() {
   // Fetch real data from Supabase
-  const transactionsResult = await getTransactions();
-  const budgetsResult = await getBudgets();
-  const potsResult = await getPots();
+  const [transactionsResult, budgetsResult, potsResult] = await Promise.all([
+    getTransactions(),
+    getBudgets(),
+    getPots(),
+  ]);
 
   // Handle errors
-  if (transactionsResult.error) {
-    console.error("Error fetching transactions:", transactionsResult.error);
-  }
-  if (budgetsResult.error) {
-    console.error("Error fetching budgets:", budgetsResult.error);
-  }
-  if (potsResult.error) {
-    console.error("Error fetching pots:", potsResult.error);
+  if (transactionsResult.error || budgetsResult.error || potsResult.error) {
+    const errorMessage =
+      transactionsResult.error || budgetsResult.error || potsResult.error;
+    return <ErrorMessage message={errorMessage} />;
   }
 
-  // Get the data arrays (empty if error)
+  // Get the data arrays
   const transactions = transactionsResult.data || [];
   const budgets = budgetsResult.data || [];
   const pots = potsResult.data || [];

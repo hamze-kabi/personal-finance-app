@@ -4,11 +4,13 @@ import { useState, useEffect } from "react";
 import { useStore } from "@/store";
 import { getPots } from "@/actions/transactions";
 import { createPot, updatePot, deletePot } from "@/actions/pots";
-import Image from "next/image";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import ErrorMessage from "@/components/ui/ErrorMessage";
 
 export default function PotsPage() {
   const { potsLoading, setPotsLoading } = useStore();
   const [pots, setPots] = useState([]);
+  const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
   const [editingPot, setEditingPot] = useState(null);
@@ -20,13 +22,15 @@ export default function PotsPage() {
     theme: "#277C78",
   });
   const [transactionAmount, setTransactionAmount] = useState("");
-  const [error, setError] = useState("");
+  const [formError, setFormError] = useState("");
 
-  // Fetch pots
   const fetchPots = async () => {
     setPotsLoading(true);
+    setError(null);
     const result = await getPots();
-    if (result.data) {
+    if (result.error) {
+      setError(result.error);
+    } else if (result.data) {
       setPots(result.data);
     }
     setPotsLoading(false);
@@ -36,7 +40,6 @@ export default function PotsPage() {
     fetchPots();
   }, []);
 
-  // Open modal for creating/editing pot
   const openModal = (pot = null) => {
     if (pot) {
       setEditingPot(pot);
@@ -53,38 +56,35 @@ export default function PotsPage() {
         theme: "#277C78",
       });
     }
-    setError("");
+    setFormError("");
     setIsModalOpen(true);
   };
 
-  // Open transaction modal for add/withdraw
   const openTransactionModal = (pot, type) => {
     setSelectedPot(pot);
     setTransactionType(type);
     setTransactionAmount("");
-    setError("");
+    setFormError("");
     setIsTransactionModalOpen(true);
   };
 
-  // Close modals
   const closeModal = () => {
     setIsModalOpen(false);
     setEditingPot(null);
     setFormData({ name: "", target: "", theme: "#277C78" });
-    setError("");
+    setFormError("");
   };
 
   const closeTransactionModal = () => {
     setIsTransactionModalOpen(false);
     setSelectedPot(null);
     setTransactionAmount("");
-    setError("");
+    setFormError("");
   };
 
-  // Handle pot form submission (create/update)
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setFormError("");
 
     const data = {
       name: formData.name,
@@ -100,26 +100,25 @@ export default function PotsPage() {
     }
 
     if (result.error) {
-      setError(result.error);
+      setFormError(result.error);
     } else {
       closeModal();
       fetchPots();
     }
   };
 
-  // Handle add/withdraw transaction
   const handleTransaction = async (e) => {
     e.preventDefault();
-    setError("");
+    setFormError("");
 
     const amount = parseFloat(transactionAmount);
     if (isNaN(amount) || amount <= 0) {
-      setError("Please enter a valid amount.");
+      setFormError("Please enter a valid amount.");
       return;
     }
 
     if (transactionType === "withdraw" && amount > selectedPot.total) {
-      setError("Insufficient balance in this pot.");
+      setFormError("Insufficient balance in this pot.");
       return;
     }
 
@@ -131,14 +130,13 @@ export default function PotsPage() {
     const result = await updatePot(selectedPot.id, { total: newTotal });
 
     if (result.error) {
-      setError(result.error);
+      setFormError(result.error);
     } else {
       closeTransactionModal();
       fetchPots();
     }
   };
 
-  // Handle delete
   const handleDelete = async (id) => {
     if (confirm("Are you sure you want to delete this pot?")) {
       const result = await deletePot(id);
@@ -151,16 +149,15 @@ export default function PotsPage() {
   };
 
   if (potsLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-gray-500">Loading pots...</div>
-      </div>
-    );
+    return <LoadingSpinner message="Loading pots..." />;
+  }
+
+  if (error) {
+    return <ErrorMessage message={error} onRetry={fetchPots} />;
   }
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-900">Pots</h1>
         <button
@@ -171,7 +168,6 @@ export default function PotsPage() {
         </button>
       </div>
 
-      {/* Pots Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {pots.length === 0 ? (
           <div className="col-span-2 text-center py-12 text-gray-500">
@@ -236,7 +232,6 @@ export default function PotsPage() {
                   </div>
                 </div>
 
-                {/* Progress Bar */}
                 <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full transition-all duration-300"
@@ -256,7 +251,6 @@ export default function PotsPage() {
                   </span>
                 </div>
 
-                {/* Add/Withdraw Buttons */}
                 <div className="flex gap-2 mt-4">
                   <button
                     onClick={() => openTransactionModal(pot, "add")}
@@ -277,7 +271,6 @@ export default function PotsPage() {
         )}
       </div>
 
-      {/* Modal for Create/Edit Pot */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl max-w-md w-full p-6">
@@ -285,9 +278,9 @@ export default function PotsPage() {
               {editingPot ? "Edit Pot" : "Create Pot"}
             </h2>
 
-            {error && (
+            {formError && (
               <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
-                {error}
+                {formError}
               </div>
             )}
 
@@ -307,7 +300,6 @@ export default function PotsPage() {
                   required
                 />
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Target Amount ($)
@@ -325,7 +317,6 @@ export default function PotsPage() {
                   required
                 />
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Theme Color
@@ -344,7 +335,6 @@ export default function PotsPage() {
                   </span>
                 </div>
               </div>
-
               <div className="flex gap-3 pt-2">
                 <button
                   type="submit"
@@ -365,7 +355,6 @@ export default function PotsPage() {
         </div>
       )}
 
-      {/* Modal for Add/Withdraw */}
       {isTransactionModalOpen && selectedPot && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl max-w-md w-full p-6">
@@ -380,9 +369,9 @@ export default function PotsPage() {
               Current balance: ${selectedPot.total.toFixed(2)}
             </p>
 
-            {error && (
+            {formError && (
               <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
-                {error}
+                {formError}
               </div>
             )}
 
@@ -402,7 +391,6 @@ export default function PotsPage() {
                   required
                 />
               </div>
-
               <div className="flex gap-3 pt-2">
                 <button
                   type="submit"

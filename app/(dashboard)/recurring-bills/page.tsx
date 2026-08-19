@@ -3,31 +3,34 @@
 import { useState, useEffect, useMemo } from "react";
 import { useStore } from "@/store";
 import { getTransactions } from "@/actions/transactions";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import ErrorMessage from "@/components/ui/ErrorMessage";
 import Image from "next/image";
 
 export default function RecurringBillsPage() {
   const { recurringBillsLoading, setRecurringBillsLoading } = useStore();
   const [transactions, setTransactions] = useState([]);
+  const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Fetch transactions
-  useEffect(() => {
-    async function fetchTransactions() {
-      setRecurringBillsLoading(true);
-      const result = await getTransactions();
-      if (result.data) {
-        setTransactions(result.data);
-      }
-      setRecurringBillsLoading(false);
+  const fetchTransactions = async () => {
+    setRecurringBillsLoading(true);
+    setError(null);
+    const result = await getTransactions();
+    if (result.error) {
+      setError(result.error);
+    } else if (result.data) {
+      setTransactions(result.data);
     }
-    fetchTransactions();
-  }, [setRecurringBillsLoading]);
+    setRecurringBillsLoading(false);
+  };
 
-  // Filter recurring bills
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
+
   const recurringBills = useMemo(() => {
     const bills = transactions.filter((t) => t.recurring === true);
-
-    // Filter by search query
     if (searchQuery) {
       return bills.filter((b) =>
         b.name.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -36,7 +39,6 @@ export default function RecurringBillsPage() {
     return bills;
   }, [transactions, searchQuery]);
 
-  // Calculate summary
   const summary = useMemo(() => {
     const today = new Date();
     let paid = 0;
@@ -62,21 +64,19 @@ export default function RecurringBillsPage() {
   }, [recurringBills]);
 
   if (recurringBillsLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-gray-500">Loading recurring bills...</div>
-      </div>
-    );
+    return <LoadingSpinner message="Loading recurring bills..." />;
+  }
+
+  if (error) {
+    return <ErrorMessage message={error} onRetry={fetchTransactions} />;
   }
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Recurring Bills</h1>
       </div>
 
-      {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
           <p className="text-sm text-gray-500">Paid Bills</p>
@@ -98,7 +98,6 @@ export default function RecurringBillsPage() {
         </div>
       </div>
 
-      {/* Search */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="flex-1">
           <input
@@ -111,12 +110,10 @@ export default function RecurringBillsPage() {
         </div>
       </div>
 
-      {/* Results Count */}
       <div className="text-sm text-gray-500">
         Showing {recurringBills.length} recurring bills
       </div>
 
-      {/* Bills List */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         {recurringBills.length === 0 ? (
           <div className="p-6 text-center text-gray-500">

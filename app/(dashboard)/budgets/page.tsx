@@ -4,12 +4,14 @@ import { useState, useEffect } from "react";
 import { useStore } from "@/store";
 import { getBudgets, getTransactions } from "@/actions/transactions";
 import { createBudget, updateBudget, deleteBudget } from "@/actions/budgets";
-import Image from "next/image";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import ErrorMessage from "@/components/ui/ErrorMessage";
 
 export default function BudgetsPage() {
   const { budgetsLoading, setBudgetsLoading } = useStore();
   const [budgets, setBudgets] = useState([]);
   const [transactions, setTransactions] = useState([]);
+  const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBudget, setEditingBudget] = useState(null);
   const [formData, setFormData] = useState({
@@ -17,18 +19,23 @@ export default function BudgetsPage() {
     maximum: "",
     theme: "#277C78",
   });
-  const [error, setError] = useState("");
+  const [formError, setFormError] = useState("");
 
-  // Fetch budgets and transactions
   const fetchData = async () => {
     setBudgetsLoading(true);
-    const budgetsResult = await getBudgets();
-    const transactionsResult = await getTransactions();
-
-    if (budgetsResult.data) {
+    setError(null);
+    const [budgetsResult, transactionsResult] = await Promise.all([
+      getBudgets(),
+      getTransactions(),
+    ]);
+    if (budgetsResult.error) {
+      setError(budgetsResult.error);
+    } else if (budgetsResult.data) {
       setBudgets(budgetsResult.data);
     }
-    if (transactionsResult.data) {
+    if (transactionsResult.error) {
+      setError(transactionsResult.error);
+    } else if (transactionsResult.data) {
       setTransactions(transactionsResult.data);
     }
     setBudgetsLoading(false);
@@ -38,7 +45,6 @@ export default function BudgetsPage() {
     fetchData();
   }, []);
 
-  // Calculate spent amount for a category from transactions
   const getSpentForCategory = (category) => {
     const spent = transactions
       .filter((t) => t.category === category && t.amount < 0)
@@ -46,7 +52,6 @@ export default function BudgetsPage() {
     return spent;
   };
 
-  // Open modal for creating/editing
   const openModal = (budget = null) => {
     if (budget) {
       setEditingBudget(budget);
@@ -63,22 +68,20 @@ export default function BudgetsPage() {
         theme: "#277C78",
       });
     }
-    setError("");
+    setFormError("");
     setIsModalOpen(true);
   };
 
-  // Close modal
   const closeModal = () => {
     setIsModalOpen(false);
     setEditingBudget(null);
     setFormData({ category: "", maximum: "", theme: "#277C78" });
-    setError("");
+    setFormError("");
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setFormError("");
 
     const data = {
       category: formData.category,
@@ -94,14 +97,13 @@ export default function BudgetsPage() {
     }
 
     if (result.error) {
-      setError(result.error);
+      setFormError(result.error);
     } else {
       closeModal();
       fetchData();
     }
   };
 
-  // Handle delete
   const handleDelete = async (id) => {
     if (confirm("Are you sure you want to delete this budget?")) {
       const result = await deleteBudget(id);
@@ -114,16 +116,15 @@ export default function BudgetsPage() {
   };
 
   if (budgetsLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-gray-500">Loading budgets...</div>
-      </div>
-    );
+    return <LoadingSpinner message="Loading budgets..." />;
+  }
+
+  if (error) {
+    return <ErrorMessage message={error} onRetry={fetchData} />;
   }
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-900">Budgets</h1>
         <button
@@ -134,7 +135,6 @@ export default function BudgetsPage() {
         </button>
       </div>
 
-      {/* Budgets Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {budgets.length === 0 ? (
           <div className="col-span-2 text-center py-12 text-gray-500">
@@ -202,7 +202,6 @@ export default function BudgetsPage() {
                   </div>
                 </div>
 
-                {/* Progress Bar */}
                 <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full transition-all duration-300"
@@ -227,7 +226,6 @@ export default function BudgetsPage() {
         )}
       </div>
 
-      {/* Modal for Create/Edit */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl max-w-md w-full p-6">
@@ -235,9 +233,9 @@ export default function BudgetsPage() {
               {editingBudget ? "Edit Budget" : "Create Budget"}
             </h2>
 
-            {error && (
+            {formError && (
               <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
-                {error}
+                {formError}
               </div>
             )}
 
@@ -257,7 +255,6 @@ export default function BudgetsPage() {
                   required
                 />
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Maximum Amount ($)
@@ -275,7 +272,6 @@ export default function BudgetsPage() {
                   required
                 />
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Theme Color
@@ -294,7 +290,6 @@ export default function BudgetsPage() {
                   </span>
                 </div>
               </div>
-
               <div className="flex gap-3 pt-2">
                 <button
                   type="submit"

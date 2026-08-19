@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import Image from "next/image";
 import { useStore } from "@/store";
 import { getTransactions } from "@/actions/transactions";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import ErrorMessage from "@/components/ui/ErrorMessage";
+import Image from "next/image";
 
 export default function TransactionsPage() {
-  // Zustand state for UI controls
   const {
     searchQuery,
     setSearchQuery,
@@ -18,27 +19,28 @@ export default function TransactionsPage() {
     setTransactionsLoading,
   } = useStore();
 
-  // Local state
   const [transactions, setTransactions] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // Fetch transactions on mount
-  useEffect(() => {
-    async function fetchTransactions() {
-      setTransactionsLoading(true);
-      const result = await getTransactions();
-      if (result.data) {
-        setTransactions(result.data);
-        // Extract unique categories
-        const uniqueCategories = [
-          ...new Set(result.data.map((t) => t.category)),
-        ];
-        setCategories(uniqueCategories);
-      }
-      setTransactionsLoading(false);
+  // Fetch transactions
+  const fetchTransactions = async () => {
+    setTransactionsLoading(true);
+    setError(null);
+    const result = await getTransactions();
+    if (result.error) {
+      setError(result.error);
+    } else if (result.data) {
+      setTransactions(result.data);
+      const uniqueCategories = [...new Set(result.data.map((t) => t.category))];
+      setCategories(uniqueCategories);
     }
+    setTransactionsLoading(false);
+  };
+
+  useEffect(() => {
     fetchTransactions();
   }, []);
 
@@ -46,19 +48,16 @@ export default function TransactionsPage() {
   const filteredAndSortedTransactions = useMemo(() => {
     let result = [...transactions];
 
-    // Filter by search query
     if (searchQuery) {
       result = result.filter((t) =>
         t.name.toLowerCase().includes(searchQuery.toLowerCase()),
       );
     }
 
-    // Filter by category
     if (selectedCategory) {
       result = result.filter((t) => t.category === selectedCategory);
     }
 
-    // Sort
     switch (sortOption) {
       case "newest":
         result.sort(
@@ -92,30 +91,27 @@ export default function TransactionsPage() {
     currentPage * itemsPerPage,
   );
 
-  // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery, selectedCategory, sortOption]);
 
-  // Loading state
+  // Show loading state
   if (transactionsLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-gray-500">Loading transactions...</div>
-      </div>
-    );
+    return <LoadingSpinner message="Loading transactions..." />;
+  }
+
+  // Show error state
+  if (error) {
+    return <ErrorMessage message={error} onRetry={fetchTransactions} />;
   }
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Transactions</h1>
       </div>
 
-      {/* Search and Filter */}
       <div className="flex flex-col sm:flex-row gap-4">
-        {/* Search */}
         <div className="flex-1">
           <input
             type="text"
@@ -125,8 +121,6 @@ export default function TransactionsPage() {
             className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
-
-        {/* Category Filter */}
         <div className="sm:w-48">
           <select
             value={selectedCategory}
@@ -141,8 +135,6 @@ export default function TransactionsPage() {
             ))}
           </select>
         </div>
-
-        {/* Sort Option */}
         <div className="sm:w-48">
           <select
             value={sortOption}
@@ -157,13 +149,11 @@ export default function TransactionsPage() {
         </div>
       </div>
 
-      {/* Results Count */}
       <div className="text-sm text-gray-500">
         Showing {paginatedTransactions.length} of{" "}
         {filteredAndSortedTransactions.length} transactions
       </div>
 
-      {/* Transactions List */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         {paginatedTransactions.length === 0 ? (
           <div className="p-6 text-center text-gray-500">
@@ -179,7 +169,6 @@ export default function TransactionsPage() {
                 className="flex justify-between items-center px-6 py-4 hover:bg-gray-50 transition-colors"
               >
                 <div className="flex items-center gap-4">
-                  {/* Avatar */}
                   <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 flex-shrink-0 relative">
                     {tx.avatar ? (
                       <Image
@@ -207,11 +196,7 @@ export default function TransactionsPage() {
                     </p>
                   </div>
                 </div>
-                <p
-                  className={`font-semibold ${
-                    tx.amount > 0 ? "text-green-600" : "text-gray-900"
-                  }`}
-                >
+                <p className="font-semibold text-gray-900">
                   ${Math.abs(tx.amount).toFixed(2)}
                 </p>
               </div>
@@ -220,7 +205,6 @@ export default function TransactionsPage() {
         )}
       </div>
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-2">
           <button
