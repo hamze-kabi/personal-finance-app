@@ -66,12 +66,12 @@
 
 ---
 
-[] **Phase 3: Connect Data & Logic**
+[DONE] **Phase 3: Connect Data & Logic**
 
-[]- **3.1. Hydrate components with real data**
+[DONE]- **3.1. Hydrate components with real data**
 
 []- **3.2. Implement core features**
-[] - 3.2.1. Overview (Balance, income, expense, summaries)
+[DONE] - 3.2.1. Overview (Balance, income, expense, summaries)
 [] - 3.2.2. Transactions (Paginated list, search, sort, filter)
 [] - 3.2.3. Budgets (CRUD)
 [] - 3.2.4. Pots (Add/Withdraw money)

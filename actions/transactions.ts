@@ -82,3 +82,43 @@ export async function getTransactions() {
 
   return { data };
 }
+
+// Add after your existing getTransactions function
+
+export async function getBudgets() {
+  const supabase = await createClient();
+
+  // TEMPORARY: Use the same hardcoded user ID
+  const TEST_USER_ID = "48da69c7-f18c-4f18-865d-8b1711fb82db";
+
+  const { data, error } = await supabase
+    .from("budgets")
+    .select("*")
+    .eq("user_id", TEST_USER_ID)
+    .order("category", { ascending: true });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { data };
+}
+
+export async function getPots() {
+  const supabase = await createClient();
+
+  // TEMPORARY: Use the same hardcoded user ID
+  const TEST_USER_ID = "48da69c7-f18c-4f18-865d-8b1711fb82db";
+
+  const { data, error } = await supabase
+    .from("pots")
+    .select("*")
+    .eq("user_id", TEST_USER_ID)
+    .order("name", { ascending: true });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { data };
+}
