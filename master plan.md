@@ -81,23 +81,23 @@
 
 [DONE]- **3.4. Add form validation**
 
-[]- **3.5. Add "See Details" links**
+[DONE]- **3.5. Add "See Details" links**
 
-[]- **3.6. Test every feature**
+[DONE]- **3.6. Test every feature**
 
 ---
 
-[] **Phase 4: Authentication & Security**
+[DONE] **Phase 4: Authentication & Security**
 
-[]- **4.1. Set up Supabase Auth**
+[DONE]- **4.1. Set up Supabase Auth**
 
-[]- **4.2. Create sign-up and sign-in pages**
+[DONE]- **4.2. Create sign-up and sign-in pages**
 
-[]- **4.3. Protect routes (middleware)**
+[DONE]- **4.3. Protect routes (middleware)**
 
-[]- **4.4. Update Server Actions**
+[DONE]- **4.4. Update Server Actions**
 
-[]- **4.5. Update data fetching**
+[DONE]- **4.5. Update data fetching**
 
 ---
 

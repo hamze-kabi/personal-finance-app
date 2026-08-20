@@ -4,11 +4,17 @@ import { createClient } from "@/lib/supabase/server";
 import { CreatePotSchema, UpdatePotSchema } from "@/schemas";
 import { revalidatePath } from "next/cache";
 
-// TEMPORARY: Hardcoded user ID for testing
-const TEST_USER_ID = "48da69c7-f18c-4f18-865d-8b1711fb82db";
-
 export async function createPot(data: any) {
   const supabase = await createClient();
+
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return { error: "You must be logged in to create a pot" };
+  }
 
   const validationResult = CreatePotSchema.safeParse(data);
   if (!validationResult.success) {
@@ -23,7 +29,7 @@ export async function createPot(data: any) {
     .from("pots")
     .insert({
       ...validatedData,
-      user_id: TEST_USER_ID,
+      user_id: user.id,
     })
     .select()
     .single();
@@ -39,6 +45,15 @@ export async function createPot(data: any) {
 export async function updatePot(id: number, data: any) {
   const supabase = await createClient();
 
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return { error: "You must be logged in to update a pot" };
+  }
+
   const validationResult = UpdatePotSchema.safeParse(data);
   if (!validationResult.success) {
     return {
@@ -52,7 +67,7 @@ export async function updatePot(id: number, data: any) {
     .from("pots")
     .update(validatedData)
     .eq("id", id)
-    .eq("user_id", TEST_USER_ID)
+    .eq("user_id", user.id)
     .select()
     .single();
 
@@ -67,11 +82,20 @@ export async function updatePot(id: number, data: any) {
 export async function deletePot(id: number) {
   const supabase = await createClient();
 
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return { error: "You must be logged in to delete a pot" };
+  }
+
   const { error } = await supabase
     .from("pots")
     .delete()
     .eq("id", id)
-    .eq("user_id", TEST_USER_ID);
+    .eq("user_id", user.id);
 
   if (error) {
     return { error: error.message };

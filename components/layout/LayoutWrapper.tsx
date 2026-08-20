@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import Sidebar from "./Sidebar";
 import BottomNav from "./BottomNav";
 
@@ -9,8 +10,12 @@ export default function LayoutWrapper({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+
+  // Check if we're on an auth page
+  const isAuthPage = pathname === "/login" || pathname === "/signup";
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -32,6 +37,11 @@ export default function LayoutWrapper({
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  // If on auth page, render without sidebar
+  if (isAuthPage) {
+    return <>{children}</>;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar */}
@@ -48,8 +58,8 @@ export default function LayoutWrapper({
         <div className="p-4 lg:p-8">{children}</div>
       </main>
 
-      {/* Bottom Navigation (mobile only) */}
-      {isMobile && <BottomNav />}
+      {/* Bottom Navigation */}
+      <BottomNav />
 
       {/* Mobile overlay */}
       {isMobile && isSidebarOpen && (

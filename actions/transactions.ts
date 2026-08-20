@@ -5,19 +5,17 @@ import { CreateTransactionSchema } from "@/schemas";
 import { revalidatePath } from "next/cache";
 
 export async function createTransaction(formData: FormData) {
-  // TEMPORARY: Use a hardcoded user ID for testing
-  // TODO: Replace with actual authentication when Phase 4 is complete
-  const TEST_USER_ID = "48da69c7-f18c-4f18-865d-8b1711fb82db"; // Your UUID from Supabase
+  const supabase = await createClient();
 
-  // Comment out the authentication check for now
-  // const supabase = await createClient();
-  // const {
-  //   data: { user },
-  //   error: userError,
-  // } = await supabase.auth.getUser();
-  // if (userError || !user) {
-  //   return { error: "You must be logged in to create a transaction" };
-  // }
+  // Get the current user
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return { error: "You must be logged in to create a transaction" };
+  }
 
   // Extract and validate data
   const rawData = {
@@ -39,12 +37,11 @@ export async function createTransaction(formData: FormData) {
 
   const validatedData = validationResult.data;
 
-  // Insert with hardcoded user ID
-  const supabase = await createClient();
+  // Insert with the logged-in user's ID
   const { data, error } = await supabase
     .from("transactions")
     .insert({
-      user_id: TEST_USER_ID, // Using hardcoded ID instead of user.id
+      user_id: user.id,
       avatar: validatedData.avatar,
       name: validatedData.name,
       category: validatedData.category,
@@ -63,17 +60,23 @@ export async function createTransaction(formData: FormData) {
   return { success: "Transaction created successfully", data };
 }
 
-// In actions/transactions.ts
 export async function getTransactions() {
   const supabase = await createClient();
 
-  // TEMPORARY: Use the same hardcoded user ID
-  const TEST_USER_ID = "48da69c7-f18c-4f18-865d-8b1711fb82db";
+  // Get the current user
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return { error: "You must be logged in to view transactions" };
+  }
 
   const { data, error } = await supabase
     .from("transactions")
     .select("*")
-    .eq("user_id", TEST_USER_ID)
+    .eq("user_id", user.id)
     .order("date", { ascending: false });
 
   if (error) {
@@ -83,18 +86,22 @@ export async function getTransactions() {
   return { data };
 }
 
-// Add after your existing getTransactions function
-
 export async function getBudgets() {
   const supabase = await createClient();
 
-  // TEMPORARY: Use the same hardcoded user ID
-  const TEST_USER_ID = "48da69c7-f18c-4f18-865d-8b1711fb82db";
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return { error: "You must be logged in to view budgets" };
+  }
 
   const { data, error } = await supabase
     .from("budgets")
     .select("*")
-    .eq("user_id", TEST_USER_ID)
+    .eq("user_id", user.id)
     .order("category", { ascending: true });
 
   if (error) {
@@ -107,13 +114,19 @@ export async function getBudgets() {
 export async function getPots() {
   const supabase = await createClient();
 
-  // TEMPORARY: Use the same hardcoded user ID
-  const TEST_USER_ID = "48da69c7-f18c-4f18-865d-8b1711fb82db";
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return { error: "You must be logged in to view pots" };
+  }
 
   const { data, error } = await supabase
     .from("pots")
     .select("*")
-    .eq("user_id", TEST_USER_ID)
+    .eq("user_id", user.id)
     .order("name", { ascending: true });
 
   if (error) {

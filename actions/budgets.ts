@@ -4,13 +4,18 @@ import { createClient } from "@/lib/supabase/server";
 import { CreateBudgetSchema, UpdateBudgetSchema } from "@/schemas";
 import { revalidatePath } from "next/cache";
 
-// TEMPORARY: Hardcoded user ID for testing
-const TEST_USER_ID = "48da69c7-f18c-4f18-865d-8b1711fb82db";
-
 export async function createBudget(data: any) {
   const supabase = await createClient();
 
-  // Validate the data
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return { error: "You must be logged in to create a budget" };
+  }
+
   const validationResult = CreateBudgetSchema.safeParse(data);
   if (!validationResult.success) {
     return {
@@ -24,7 +29,7 @@ export async function createBudget(data: any) {
     .from("budgets")
     .insert({
       ...validatedData,
-      user_id: TEST_USER_ID,
+      user_id: user.id,
     })
     .select()
     .single();
@@ -40,6 +45,15 @@ export async function createBudget(data: any) {
 export async function updateBudget(id: number, data: any) {
   const supabase = await createClient();
 
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return { error: "You must be logged in to update a budget" };
+  }
+
   const validationResult = UpdateBudgetSchema.safeParse(data);
   if (!validationResult.success) {
     return {
@@ -53,7 +67,7 @@ export async function updateBudget(id: number, data: any) {
     .from("budgets")
     .update(validatedData)
     .eq("id", id)
-    .eq("user_id", TEST_USER_ID)
+    .eq("user_id", user.id)
     .select()
     .single();
 
@@ -68,11 +82,20 @@ export async function updateBudget(id: number, data: any) {
 export async function deleteBudget(id: number) {
   const supabase = await createClient();
 
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return { error: "You must be logged in to delete a budget" };
+  }
+
   const { error } = await supabase
     .from("budgets")
     .delete()
     .eq("id", id)
-    .eq("user_id", TEST_USER_ID);
+    .eq("user_id", user.id);
 
   if (error) {
     return { error: error.message };

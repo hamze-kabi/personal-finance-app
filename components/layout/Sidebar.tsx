@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { navItems } from "@/lib/navigation";
 import { useState } from "react";
+import { signOut } from "@/actions/auth";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -75,10 +76,40 @@ export default function Sidebar({ isOpen }: SidebarProps) {
         })}
       </nav>
 
+      {/* Sign Out Button */}
+      <div className="mt-4 pt-4 border-t border-gray-200">
+        <form action={signOut}>
+          <button
+            type="submit"
+            className={`
+              flex items-center gap-3 w-full px-4 py-3 rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors cursor-pointer
+              ${isMinimized ? "lg:justify-center" : ""}
+            `}
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+              />
+            </svg>
+            <span className={`${isMinimized ? "lg:hidden" : ""}`}>
+              Sign Out
+            </span>
+          </button>
+        </form>
+      </div>
+
       {/* Minimize/Maximize Button - Desktop only */}
       <button
         onClick={toggleMinimize}
-        className="hidden lg:flex items-center justify-center gap-2 mt-4 p-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
+        className="hidden lg:flex items-center justify-center gap-2 mt-4 p-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors cursor-pointer"
         aria-label={isMinimized ? "Expand sidebar" : "Minimize sidebar"}
       >
         <Image
