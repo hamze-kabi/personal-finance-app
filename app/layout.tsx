@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import LayoutWrapper from "@/components/layout/LayoutWrapper";
-
-const inter = Inter({ subsets: ["latin"] });
+import { publicSans, vazirmatn } from "@/lib/fonts";
 
 export const metadata: Metadata = {
   title: "Finance App",
@@ -16,8 +14,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" className={`${publicSans.variable} ${vazirmatn.variable}`}>
+      <body className="font-sans">
         <LayoutWrapper>{children}</LayoutWrapper>
       </body>
     </html>

@@ -103,7 +103,7 @@
 
 [] **Phase 5: Styling & Polish**
 
-[]- **5.1. Install fonts**
+[DONE]- **5.1. Install fonts**
 
 []- **5.2. Add assets (logos, icons, images)**
 
