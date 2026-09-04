@@ -105,7 +105,7 @@
 
 [DONE]- **5.1. Install fonts**
 
-[]- **5.2. Add assets (logos, icons, images)**
+[DONE]- **5.2. Add assets (logos, icons, images)**
 
 []- **5.3. Apply colors**
 
@@ -139,3 +139,15 @@
 []- **6.6. Prepare your portfolio**
 
 []- **6.7. Prepare a demo script**
+
+app/transactions/page.tsx
+
+app/budgets/page.tsx
+
+app/pots/page.tsx
+
+app/recurring-bills/page.tsx
+
+components/layout/Sidebar.tsx
+
+components/layout/BottomNav.tsx
