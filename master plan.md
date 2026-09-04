@@ -107,26 +107,26 @@
 
 [DONE]- **5.2. Add assets (logos, icons, images)**
 
-[]- **5.3. Apply colors**
+[DONE]- **5.3. Apply colors**
 
-[]- **5.4. Apply sizing and positioning**
+[DONE]- **5.4. Apply sizing and positioning**
 
-[]- **5.5. Add animations and effects**
-[] - 5.5.1. Add hover and focus states to all interactive elements
-[] - 5.5.2. Add smooth transitions (e.g., for sidebar open/close)
+[DONE]- **5.5. Add animations and effects**
+[DONE] - 5.5.1. Add hover and focus states to all interactive elements
+[DONE] - 5.5.2. Add smooth transitions (e.g., for sidebar open/close)
 
-[]- **5.6. Add i18n translations (Farsi & English)**
-[] - 5.6.1. Create `fa.json` and `en.json` translation files
-[] - 5.6.2. Replace all hardcoded text with `t('key')` function
-[] - 5.6.3. Add a language switcher (e.g., a toggle button)
+[NO NEED]- **5.6. Add i18n translations (Farsi & English)**
+[NO NEED] - 5.6.1. Create `fa.json` and `en.json` translation files
+[NO NEED] - 5.6.2. Replace all hardcoded text with `t('key')` function
+[NO NEED] - 5.6.3. Add a language switcher (e.g., a toggle button)
 
-[]- **5.7. Final testing**
+[DONE]- **5.7. Final testing**
 
 ---
 
 [] **Phase 6: Deployment & Handover**
 
-[]- **6.1. Push your code to a GitHub repository**
+[DONE]- **6.1. Push your code to a GitHub repository**
 
 []- **6.2. Connect your GitHub repo to Vercel**
 
@@ -139,15 +139,5 @@
 []- **6.6. Prepare your portfolio**
 
 []- **6.7. Prepare a demo script**
-
-app/transactions/page.tsx
-
-app/budgets/page.tsx
-
-app/pots/page.tsx
-
-app/recurring-bills/page.tsx
-
-components/layout/Sidebar.tsx
 
 components/layout/BottomNav.tsx
