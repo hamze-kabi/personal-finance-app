@@ -7,11 +7,12 @@ import { createPot, updatePot, deletePot } from "@/actions/pots";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 import FormError from "@/components/ui/FormError";
+import { Pot } from "@/types";
 
 export default function PotsPage() {
   const { potsLoading, setPotsLoading } = useStore();
-  const [pots, setPots] = useState([]);
-  const [error, setError] = useState(null);
+  const [pots, setPots] = useState<Pot[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
   const [editingPot, setEditingPot] = useState(null);
@@ -70,7 +71,7 @@ export default function PotsPage() {
   };
 
   // Open transaction modal for add/withdraw
-  const openTransactionModal = (pot, type) => {
+  const openTransactionModal = (pot: Pot, type: "add" | "withdraw") => {
     setSelectedPot(pot);
     setTransactionType(type);
     setTransactionAmount("");
@@ -171,7 +172,7 @@ export default function PotsPage() {
   };
 
   // Handle pot form submission (create/update)
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setFormError("");
 
@@ -201,13 +202,17 @@ export default function PotsPage() {
   };
 
   // Handle add/withdraw transaction
-  const handleTransaction = async (e) => {
+  const handleTransaction = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setFormError("");
 
     const errorMsg = validateTransaction(transactionAmount);
     if (errorMsg) {
       setTransactionError(errorMsg);
+      return;
+    }
+    if (!selectedPot) {
+      setFormError("No pot selected");
       return;
     }
 
@@ -228,7 +233,7 @@ export default function PotsPage() {
   };
 
   // Handle delete
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: number) => {
     if (confirm("Are you sure you want to delete this pot?")) {
       const result = await deletePot(id);
       if (result.error) {

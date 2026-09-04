@@ -6,11 +6,12 @@ import { getTransactions } from "@/actions/transactions";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 import Image from "next/image";
+import { Transaction } from "@/types";
 
 export default function RecurringBillsPage() {
   const { recurringBillsLoading, setRecurringBillsLoading } = useStore();
-  const [transactions, setTransactions] = useState([]);
-  const [error, setError] = useState(null);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
   const fetchTransactions = async () => {

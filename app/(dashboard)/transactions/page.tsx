@@ -6,6 +6,7 @@ import { getTransactions } from "@/actions/transactions";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 import Image from "next/image";
+import { Transaction } from "@/types";
 
 export default function TransactionsPage() {
   const {
@@ -19,9 +20,9 @@ export default function TransactionsPage() {
     setTransactionsLoading,
   } = useStore();
 
-  const [transactions, setTransactions] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [error, setError] = useState(null);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 

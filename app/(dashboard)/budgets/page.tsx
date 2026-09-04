@@ -7,12 +7,13 @@ import { createBudget, updateBudget, deleteBudget } from "@/actions/budgets";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 import FormError from "@/components/ui/FormError";
+import { Budget, Transaction } from "@/types";
 
 export default function BudgetsPage() {
   const { budgetsLoading, setBudgetsLoading } = useStore();
-  const [budgets, setBudgets] = useState([]);
-  const [transactions, setTransactions] = useState([]);
-  const [error, setError] = useState(null);
+  const [budgets, setBudgets] = useState<Budget[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBudget, setEditingBudget] = useState(null);
   const [formData, setFormData] = useState({
@@ -138,7 +139,7 @@ export default function BudgetsPage() {
   };
 
   // Handle form submission
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setFormError("");
 
@@ -169,7 +170,7 @@ export default function BudgetsPage() {
   };
 
   // Handle delete
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: number) => {
     if (confirm("Are you sure you want to delete this budget?")) {
       const result = await deleteBudget(id);
       if (result.error) {

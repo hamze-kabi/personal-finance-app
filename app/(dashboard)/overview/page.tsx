@@ -12,8 +12,9 @@ export default async function OverviewPage() {
 
   // Handle errors
   if (transactionsResult.error || budgetsResult.error || potsResult.error) {
-    const errorMessage =
-      transactionsResult.error || budgetsResult.error || potsResult.error;
+    const errorMessage = (transactionsResult.error ||
+      budgetsResult.error ||
+      potsResult.error) as string;
     return <ErrorMessage message={errorMessage} />;
   }
 
