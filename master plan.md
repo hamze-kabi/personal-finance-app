@@ -139,8 +139,3 @@
 []- **6.6. Prepare your portfolio**
 
 []- **6.7. Prepare a demo script**
-<<<<<<< HEAD
-
-components/layout/BottomNav.tsx
-=======
->>>>>>> parent of 5ab9942 (fix icon-caret-right)
