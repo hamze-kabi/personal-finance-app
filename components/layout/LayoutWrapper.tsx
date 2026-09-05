@@ -43,7 +43,7 @@ export default function LayoutWrapper({
   }
 
   return (
-    <div className="min-h-screen bg-biege-100">
+    <div className="min-h-screen bg-gray-50">
       {/* Sidebar */}
       <Sidebar isOpen={isSidebarOpen} />
 

@@ -4,12 +4,8 @@ export interface Transaction {
   avatar: string | null;
   name: string;
   category: string;
-  date: string; // ISO date string from Supabase
+  date: string;
   amount: number;
   recurring: boolean;
   created_at: string;
-}
-
-export interface TransactionWithCategory extends Transaction {
-  // Extend if needed
 }

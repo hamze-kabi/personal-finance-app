@@ -122,10 +122,9 @@ export default async function OverviewPage() {
               See Details
               <Image
                 src="/icons/icon-caret-right.svg"
-                className="ml-1"
                 alt="Go to Pots"
-                width={10}
-                height={10}
+                width={16}
+                height={16}
               />
             </a>
           </div>
@@ -168,10 +167,9 @@ export default async function OverviewPage() {
               View All
               <Image
                 src="/icons/icon-caret-right.svg"
-                className="ml-1"
                 alt="Go to Transactions"
-                width={10}
-                height={10}
+                width={16}
+                height={16}
               />
             </a>
           </div>
@@ -233,10 +231,9 @@ export default async function OverviewPage() {
               See Details
               <Image
                 src="/icons/icon-caret-right.svg"
-                className="ml-1"
                 alt="Go to Budgets"
-                width={10}
-                height={10}
+                width={16}
+                height={16}
               />
             </a>
           </div>
@@ -290,10 +287,9 @@ export default async function OverviewPage() {
               See Details
               <Image
                 src="/icons/icon-caret-right.svg"
-                className="ml-1"
                 alt="Go to Recurring Bills"
-                width={10}
-                height={10}
+                width={16}
+                height={16}
               />
             </a>
           </div>

@@ -105,7 +105,7 @@
 
 [DONE]- **5.1. Install fonts**
 
-[DONE]- **5.2. Add assets (logos, icons, images)**
+[]- **5.2. Add assets (logos, icons, images)**
 
 [DONE]- **5.3. Apply colors**
 
@@ -139,5 +139,8 @@
 []- **6.6. Prepare your portfolio**
 
 []- **6.7. Prepare a demo script**
+<<<<<<< HEAD
 
 components/layout/BottomNav.tsx
+=======
+>>>>>>> parent of 5ab9942 (fix icon-caret-right)
